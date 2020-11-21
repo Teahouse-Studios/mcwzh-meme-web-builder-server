@@ -1,16 +1,21 @@
 # 梗体中文 · 在线打包
 
-这里是网页部署部分，若要更新内容请前往 [基岩版仓库](https://github.com/Teahouse-Studios/mcwzh-meme-resourcepack-bedrock/) 或 [Java版仓库](https://github.com/Teahouse-Studios/mcwzh-meme-resourcepack/), 由 [WebBuilderUpdateBot](https://github.com/apps/webbuilderupdatebot) 自动更新引用。
+这里是在线打包部署部分，若要更新内容请前往 [基岩版仓库](https://github.com/Teahouse-Studios/mcwzh-meme-resourcepack-bedrock/) 或 [Java版仓库](https://github.com/Teahouse-Studios/mcwzh-meme-resourcepack/)
 
-## 本地搭建
+## 服务端搭建
 
-clone本仓库时请注意子模块，使用 ```git clone --recursive https://github.com/Teahouse-Studios/mcwzh-meme-web-builder/``` 确保子模块内容一并拉取。
+clone本仓库时请注意子模块，使用 ```git clone --recursive https://github.com/Teahouse-Studios/mcwzh-meme-web-builder-server/``` 确保子模块内容一并拉取。
 
 运行网页构建环境要求Python版本最低为**3.9**（推荐使用最新的稳定版），Node.js尽量保持最新版本，并安装依赖：
 
 ``` bash
 pip install -r requirements.txt
+```
 
+## 网页搭建
+```git clone https://github.com/Teahouse-Studios/mcwzh-meme-web-builder```
+
+``` bash
 # 选择包管理器：npm / yarn
 # npm
 npm install
@@ -20,11 +25,11 @@ yarn install
 
 如何安装，构建Vue项目此处不再赘述，新手建议使用[Vue GUI](https://cli.vuejs.org/zh/guide/creating-a-project.html#%E4%BD%BF%E7%94%A8%E5%9B%BE%E5%BD%A2%E5%8C%96%E7%95%8C%E9%9D%A2)。
 
-```frontend/src/main.js```中，将```https://meme.wd-api.com/```修改为自己的服务器地址。
+```src/main.js```中，将```https://meme.wd-api.com/```修改为自己的服务器地址。
 
 目前Teahouse Studios采用的部署方式是网站内容置于服务器，静态资源置于cdn，如果不需要静态文件分离，请按照以下方法操作：
 
-```frontend/vue.config.js```中，```publicPath```修改为```/```。
+```vue.config.js```中，```publicPath```修改为```/```。
 
 随后自行上传dist文件到服务器。
 
