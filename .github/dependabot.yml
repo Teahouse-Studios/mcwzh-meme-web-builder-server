@@ -14,7 +14,6 @@ updates:
     commit-message:
       prefix: "⬆️ "
     labels:
-      - "后端"
       - "依赖"
 
   - package-ecosystem: "gitsubmodule"
@@ -26,5 +25,4 @@ updates:
     commit-message:
       prefix: "⬆️ 🚑 "
     labels:
-      - "后端"
       - "依赖"
