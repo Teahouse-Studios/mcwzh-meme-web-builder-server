@@ -4,12 +4,35 @@
 
 ## 服务端搭建
 
-clone本仓库时请注意子模块，使用 ```git clone --recursive https://github.com/Teahouse-Studios/mcwzh-meme-web-builder-server/``` 确保子模块内容一并拉取。
+clone本仓库后，请额外clone Java版和基岩版的内容。
+
+``` bash
+git clone https://github.com/Teahouse-Studios/mcwzh-meme-web-builder-server/
+git clone https://github.com/Teahouse-Studios/mcwzh-meme-resourcepack meme-pack-java
+git clone https://github.com/Teahouse-Studios/mcwzh-meme-resourcepack-bedrock meme-pack-bedrock
+``` 
 
 运行网页构建环境要求Python版本最低为**3.9**（推荐使用最新的稳定版），Node.js尽量保持最新版本，并安装依赖：
 
 ``` bash
 pip install -r requirements.txt
+```
+
+如果您有需要, 可将```config.example.ini`` 复制至 ```config.ini```修改配置，配置内容说明如下。
+
+```ini
+[MEME]
+PULLING_WHEN_BUILD=false # 构建时拉取基岩版和Java版更新(间隔60秒)
+USE_GITHUB_WEBHOOK=false # 启用Github Webhook进行更新
+# 如您有fork的java版仓库或基岩版仓库，并保持更新，建议启用此项
+# 创建Webhook至/github Content-Type为json Secret在下方定义 设置Just the push event.
+GITHUB_SECRET=
+```
+
+设置完成后，即可启动web服务器
+
+```
+python online_builder.py
 ```
 
 ## 网页搭建
