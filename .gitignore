@@ -7,3 +7,6 @@ Include/
 pyvenv.cfg
 .DS_Store
 config.ini
+meme-pack-bedrock
+meme-pack-java
+.gitmodules
