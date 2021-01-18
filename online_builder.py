@@ -59,7 +59,11 @@ async def pull():
     global build_time
     if build_time + 60 < time.time():
         build_time = time.time()
-        proc = await asyncio.create_subprocess_exec("git", "pull", "origin", "master", "--recurse-submodules",
+        proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "pull",
+                                                    stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                                    stdin=subprocess.DEVNULL)
+        log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
+        proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "pull",
                                                     stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                                                     stdin=subprocess.DEVNULL)
         log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
@@ -141,12 +145,12 @@ app.add_routes(routes)
 if __name__ == '__main__':
     import sys
 
-    if sys.hexversion < 0x030500F0:
+    if sys.hexversion < 0x030900F0:
         raise RuntimeError(
-            "This program uses features introduced in Python 3.5, please update your Python interpreter.") from None
-    elif sys.hexversion < 0x030800F0:
+            "This program uses features introduced in Python 3.9, please update your Python interpreter.") from None
+    '''elif sys.hexversion < 0x030800F0:
         if sys.platform == "win32":  # <- Special version
             asyncio.set_event_loop(
                 asyncio.ProactorEventLoop()
-            )
+            )'''
     web.run_app(app, host="0.0.0.0", port=8000)
