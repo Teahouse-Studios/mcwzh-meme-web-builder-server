@@ -1,9 +1,7 @@
 import asyncio
 import configparser
-import importlib
 import os
 import time
-from asyncio import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from os.path import join, dirname
 from memepack_builder import JEPackBuilder, BEPackBuilder, ModuleChecker
@@ -60,12 +58,12 @@ async def pull():
     if build_time + 60 < time.time():
         build_time = time.time()
         proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "pull",
-                                                    stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                                                    stdin=subprocess.DEVNULL)
+                                                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+                                                    stdin=asyncio.subprocess.DEVNULL)
         log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
         proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "pull",
-                                                    stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                                                    stdin=subprocess.DEVNULL)
+                                                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+                                                    stdin=asyncio.subprocess.DEVNULL)
         log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
     else:
         log.append("A cache within 60 seconds is available, skipping update")
