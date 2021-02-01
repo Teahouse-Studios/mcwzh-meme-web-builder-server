@@ -57,7 +57,13 @@ async def pull():
     global build_time
     if build_time + 60 < time.time():
         build_time = time.time()
-        proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "pull",
+        await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "checkout", "master",
+                                             stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
+                                             stdin=asyncio.subprocess.DEVNULL)
+        await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "checkout", "master",
+                                             stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
+                                             stdin=asyncio.subprocess.DEVNULL)
+        proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "pull",
                                                     stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
                                                     stdin=asyncio.subprocess.DEVNULL)
         log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
