@@ -1,2 +1,2 @@
 aiohttp~=3.7.4
-memepack-builder~=0.2.1
+memepack-builder~=0.2.3
