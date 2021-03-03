@@ -54,25 +54,20 @@ async def api(request: web.Request):
 
 async def pull():
     log = []
-    global build_time
-    if build_time + 60 < time.time():
-        build_time = time.time()
-        await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "checkout", "master",
+    await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "checkout", "master",
                                              stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
                                              stdin=asyncio.subprocess.DEVNULL)
-        await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "checkout", "master",
+    await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "checkout", "master",
                                              stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
                                              stdin=asyncio.subprocess.DEVNULL)
-        proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "pull",
+    proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "pull",
                                                     stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
                                                     stdin=asyncio.subprocess.DEVNULL)
-        log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
-        proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "pull",
+    log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
+    proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "pull",
                                                     stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
                                                     stdin=asyncio.subprocess.DEVNULL)
-        log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
-    else:
-        log.append("A cache within 60 seconds is available, skipping update")
+    log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
     return log
 
 
@@ -81,8 +76,13 @@ async def ajax(request: web.Request):
     log = []
     async with builder_lock:
         if PULLING_WHEN_BUILD:
-            pull_logs = await pull()
-            log.extend(pull_logs)
+            global build_time
+            if build_time + 60 < time.time():
+                build_time = time.time()
+                pull_logs = await pull()
+                log.extend(pull_logs)
+            else:
+                log.append("A cache within 60 seconds is available, skipping update")
         if not data["_be"]:
             submodule_path = 'meme-pack-java'
             module_checker = ModuleChecker.ModuleChecker(join(submodule_path, "modules"))
