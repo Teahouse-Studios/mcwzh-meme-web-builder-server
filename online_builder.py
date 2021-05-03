@@ -64,7 +64,7 @@ async def pull():
                                                     stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
                                                     stdin=asyncio.subprocess.DEVNULL)
     log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
-    proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "pull",
+    proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "pull",
                                                     stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
                                                     stdin=asyncio.subprocess.DEVNULL)
     log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
