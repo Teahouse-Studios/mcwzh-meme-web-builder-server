@@ -1,9 +1,12 @@
 import asyncio
 import configparser
+import json
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from os.path import join, dirname
+
+import aiohttp
 from memepack_builder import JEPackBuilder, BEPackBuilder, ModuleChecker
 
 from aiohttp import web
@@ -20,11 +23,13 @@ config.read('config.ini')
 PULLING_WHEN_BUILD = True
 USE_GITHUB_WEBHOOK = False
 GITHUB_SECRET = ''
+GITHUB_ACCESS_TOKEN = ''
 if 'MEME' in config.sections():
     section = config['MEME']
     PULLING_WHEN_BUILD = section.getboolean('PULLING_WHEN_BUILD', True)
     USE_GITHUB_WEBHOOK = section.getboolean('USE_GITHUB_WEBHOOK', False)
     GITHUB_SECRET = section.get('GITHUB_SECRET', '')
+    GITHUB_ACCESS_TOKEN = section.get('GITHUB_ACCESS_TOKEN', '')
 
 
 def get_env():
@@ -55,18 +60,18 @@ async def api(request: web.Request):
 async def pull():
     log = []
     await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "checkout", "master",
-                                             stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
-                                             stdin=asyncio.subprocess.DEVNULL)
+                                         stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
+                                         stdin=asyncio.subprocess.DEVNULL)
     await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "checkout", "master",
-                                             stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
-                                             stdin=asyncio.subprocess.DEVNULL)
+                                         stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
+                                         stdin=asyncio.subprocess.DEVNULL)
     proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "pull",
-                                                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
-                                                    stdin=asyncio.subprocess.DEVNULL)
+                                                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+                                                stdin=asyncio.subprocess.DEVNULL)
     log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
     proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "pull",
-                                                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
-                                                    stdin=asyncio.subprocess.DEVNULL)
+                                                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+                                                stdin=asyncio.subprocess.DEVNULL)
     log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
     return log
 
@@ -118,8 +123,9 @@ async def ajax_preflight(request: web.Request):
 
 
 async def github(request: web.Request):
+    body = await request.text()
+    body_data = json.loads(body)
     if GITHUB_SECRET:
-        body = await request.text()
         from hashlib import sha256
         import hmac
         should_be = 'sha256=' + hmac.new(GITHUB_SECRET.encode('utf-8'), body.encode('utf-8'),
@@ -130,6 +136,11 @@ async def github(request: web.Request):
                 'X-Client-Sign': client_sign
             })
     pull_logs = await pull()
+    async with aiohttp.ClientSession(headers={
+        'authorization': f'token {GITHUB_ACCESS_TOKEN}'
+    }) as session:
+        async with session.post(body_data['deployment']['statuses_url'], json={"state": "success"}, ) as res:
+            print(await res.json())
     return web.json_response(pull_logs)
 
 
