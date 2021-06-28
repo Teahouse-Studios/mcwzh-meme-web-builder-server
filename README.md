@@ -25,8 +25,13 @@ pip install -r requirements.txt
 PULLING_WHEN_BUILD=false # 构建时拉取基岩版和Java版更新(间隔60秒)
 USE_GITHUB_WEBHOOK=false # 启用Github Webhook进行更新
 # 如您有fork的java版仓库或基岩版仓库，并保持更新，建议启用此项
-# 创建Webhook至/github Content-Type为json Secret在下方定义 设置Just the push event.
+# 创建Webhook至/github Content-Type为json Secret在下方定义
+# 设置Let me select individual events, 选中Deployments
 GITHUB_SECRET=
+# 个人Access Token
+# https://github.com/settings/tokens/new
+# 请确保选中repo_deployment
+GITHUB_ACCESS_TOKEN=
 ```
 
 设置完成后，即可启动web服务器
