@@ -3,6 +3,7 @@ import configparser
 import json
 import os
 import time
+import pathlib
 from concurrent.futures import ThreadPoolExecutor
 from os.path import join, dirname
 
@@ -48,9 +49,14 @@ def get_env():
     be_checker.check_module()
     timing.append(f'be check modules: {time.time() - t}')
     be_modules = be_checker.module_info['modules']
+
+    jeStat = pathlib.Path(join('meme-pack-java', 'meme_resourcepack', 'assets', 'minecraft', 'lang', 'zh_meme.json'))
+    beStat = pathlib.Path(join('meme-pack-bedrock', 'meme_resourcepack', 'texts', 'zh_ME.lang'))
+
     print(timing)
     return dict(mods=list(mods), enmods=list(enmods),
-                je_modules=je_modules, be_modules=be_modules)
+                je_modules=je_modules, be_modules=be_modules, je_modified=int(jeStat.stat().st_mtime * 1000),
+                be_modified=int(beStat.stat().st_mtime * 1000))
 
 
 async def api(request: web.Request):
