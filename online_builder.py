@@ -25,12 +25,14 @@ PULLING_WHEN_BUILD = True
 USE_GITHUB_WEBHOOK = False
 GITHUB_SECRET = ''
 GITHUB_ACCESS_TOKEN = ''
+ROOT = ''
 if 'MEME' in config.sections():
     section = config['MEME']
     PULLING_WHEN_BUILD = section.getboolean('PULLING_WHEN_BUILD', True)
     USE_GITHUB_WEBHOOK = section.getboolean('USE_GITHUB_WEBHOOK', False)
     GITHUB_SECRET = section.get('GITHUB_SECRET', '')
     GITHUB_ACCESS_TOKEN = section.get('GITHUB_ACCESS_TOKEN', '')
+    ROOT = section.get('ROOT', '')
 
 
 def get_env():
@@ -101,6 +103,7 @@ async def ajax(request: web.Request):
             submodule_path = 'meme-pack-bedrock'
             module_checker = ModuleChecker.ModuleChecker(join(submodule_path, "modules"))
         data.setdefault('output', 'builds')
+        data.setdefault('hash', True)
         current_dir = dirname(__file__)
         module_checker.check_module()
         if not data["_be"]:
@@ -116,6 +119,7 @@ async def ajax(request: web.Request):
         log.extend(builder.build_log)
     return web.json_response({"code": 200, "argument": data,
                               "logs": '\n'.join(log),
+                              "root": ROOT,
                               "filename": builder.file_name}, headers={
         'Access-Control-Allow-Origin': '*'
     })
