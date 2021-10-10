@@ -52,8 +52,8 @@ def get_env():
     timing.append(f'be check modules: {time.time() - t}')
     be_modules = be_checker.module_info['modules']
 
-    jeStat = pathlib.Path(join('meme-pack-java', 'meme_resourcepack', 'assets', 'minecraft', 'lang', 'zh_meme.json'))
-    beStat = pathlib.Path(join('meme-pack-bedrock', 'meme_resourcepack', 'texts', 'zh_ME.lang'))
+    jeStat = pathlib.Path(join('meme-pack-java', '.git', 'index'))
+    beStat = pathlib.Path(join('meme-pack-bedrock', '.git', 'index'))
 
     print(timing)
     return dict(mods=list(mods), enmods=list(enmods),
