@@ -67,17 +67,17 @@ async def api(request: web.Request):
 
 async def pull():
     log = []
-    await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "checkout", "master",
+    await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "fetch", "--all",
                                          stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
                                          stdin=asyncio.subprocess.DEVNULL)
-    await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "checkout", "master",
+    await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "fetch", "--all",
                                          stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
                                          stdin=asyncio.subprocess.DEVNULL)
-    proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "pull",
+    proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "reset","--hard","origin/master",
                                                 stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
                                                 stdin=asyncio.subprocess.DEVNULL)
     log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
-    proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "pull",
+    proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "reset","--hard","origin/master",
                                                 stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
                                                 stdin=asyncio.subprocess.DEVNULL)
     log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
