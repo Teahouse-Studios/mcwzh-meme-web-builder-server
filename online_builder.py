@@ -64,23 +64,19 @@ def get_env():
 async def api(request: web.Request):
     return web.json_response(get_env(), headers={'Access-Control-Allow-Origin': '*'})
 
+async def run(cmd: str, cwd: str):
+    proc = await asyncio.create_subprocess_exec(cmd.split(' '), cwd=cwd)
+    return str((await proc.communicate())[0], encoding="utf-8", errors="ignore")
+
 
 async def pull():
     log = []
-    await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "fetch", "--all",
-                                         stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
-                                         stdin=asyncio.subprocess.DEVNULL)
-    await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "fetch", "--all",
-                                         stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
-                                         stdin=asyncio.subprocess.DEVNULL)
-    proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-java/.git", "reset","--hard","origin/master",
-                                                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
-                                                stdin=asyncio.subprocess.DEVNULL)
-    log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
-    proc = await asyncio.create_subprocess_exec("git", "--git-dir=./meme-pack-bedrock/.git", "reset","--hard","origin/master",
-                                                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
-                                                stdin=asyncio.subprocess.DEVNULL)
-    log.append(str((await proc.communicate())[0], encoding="utf-8", errors="ignore"))
+    log.append(await run("git reset --hard @{u}", "./meme-pack-bedrock/"))
+    log.append(await run("git clean -df", "./meme-pack-bedrock/"))
+    log.append(await run("git pull", "./meme-pack-bedrock/"))
+    log.append(await run("git reset --hard @{u}", "./meme-pack-java/"))
+    log.append(await run("git clean -df", "./meme-pack-java/"))
+    log.append(await run("git pull", "./meme-pack-java/"))
     return log
 
 
