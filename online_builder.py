@@ -65,7 +65,8 @@ async def api(request: web.Request):
     return web.json_response(get_env(), headers={'Access-Control-Allow-Origin': '*'})
 
 async def run(cmd: str, cwd: str):
-    proc = await asyncio.create_subprocess_exec(cmd.split(' '), cwd=cwd)
+    proc = await asyncio.create_subprocess_exec(*cmd.split(' '), stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
+                                         stdin=asyncio.subprocess.DEVNULL, cwd=cwd)
     return str((await proc.communicate())[0], encoding="utf-8", errors="ignore")
 
 
